@@ -19,7 +19,7 @@ let handler = async (m, { conn, args }) => {
     user.monedas -= cantidadAQuitar;
 
     // Respuesta al usuario
-    await m.reply(`✅ Has quitado ${cantidadAQuitar} monedas. Ahora tienes ${user.monedas} monedas.`);
+    await m.reply(`✅Has quitado ${cantidadAQuitar} monedas. Ahora tienes ${user.monedas} monedas.`);
 }
 
 handler.help = ['quitarMonedas <cantidad>'];
