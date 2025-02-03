@@ -1,37 +1,43 @@
+import yts from 'yt-search'
 
 var handler = async (m, { text, conn, args, command, usedPrefix }) => {
-    if (!text) return conn.reply(m.chat, '🔎 Por favor, ingresa una búsqueda de Youtube.', m);
 
-    conn.reply(m.chat, wait, m, {
-        contextInfo: {
-            externalAdReply: {
-                mediaUrl: null,
-                mediaType: 1,
-                showAdAttribution: true,
-                title: packname,
-                body: dev,
-                previewType: 0,
-                thumbnail: icons,
-                sourceUrl: channel
-            }
-        }
-    });
+if (!text) return conn.reply(m.chat, `🐉 *Escriba el título de algún vídeo de Youtube\n\nEjemplo, !${command} Goku ultra Instinto*`, m, rcanal, )
 
-    try {
-        let results = await yts(text);
-        let tes = results.all;
+conn.reply(m.chat, wait, m, {
+contextInfo: { externalAdReply :{ mediaUrl: null, mediaType: 1, showAdAttribution: true,
+title: packname,
+body: wm,
+previewType: 0, thumbnail: icons,
+sourceUrl: channel }}})
 
-        if (tes.length === 0) return conn.reply(m.chat, 'No se encontraron resultados.', m);
+let results = await yts(text)
+let tes = results.all
+let teks = results.all.map(v => {
+switch (v.type) {
+case 'video': return `☁️ *Título:* 
+» ${v.title}
 
-        let teks = tes.map(v => {
-            if (v.type === 'video') {
-                return `✦ Resultados de la búsqueda para *<${text}>*\n\n> ☁️ Título » *${v.title}*\n> 🔔 Canal » *${v.author.name}*\n> 🕝 Duración » *${v.timestamp}*\n> 📆 Subido » *${v.ago}*\n> 👀 Vistas » *${v.views}*\n> 🔗 Enlace » ${v.url}`;
-            }
-        }).filter(v => v).join('\n\n••••••••••••••••••••••••••••••••••••\n\n');
+🔗 *Enlace:* 
+» ${v.url}
 
-        conn.sendFile(m.chat, tes[0].thumbnail, 'yts.jpeg', teks, fkontak, m);
-    } catch (error) {
-        console.error(error);
-        conn.reply(m.chat, 'Ocurrió un error al buscar.', m);
-    }
-};
+🕝 *Duración:*
+» ${v.timestamp}
+
+📆 *Subido:* 
+» ${v.ago}
+
+👀 *Vistas:* 
+» ${v.views}`}}).filter(v => v).join('\n\n••••••••••••••••••••••••••••••••••••\n\n')
+
+conn.sendFile(m.chat, tes[0].thumbnail, 'yts.jpeg', teks, fkontak, m)
+
+}
+handler.help = ['ytsearch']
+handler.tags = ['buscador']
+handler.command = /^playlist|ytbuscar|yts(earch)?$/i
+
+handler.register = true
+//handler.yenes = 1
+
+export default handler
