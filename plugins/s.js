@@ -1,5 +1,4 @@
 
-
 let handler = async (m, { conn }) => {
     // Obtener el texto del mensaje y dividirlo en palabras
     let texto = m.text.split(' ').slice(1); // Ignorar el primer elemento que es el comando
@@ -14,7 +13,7 @@ let handler = async (m, { conn }) => {
     const seleccionado = texto[indiceAleatorio];
 
     // Crear el mensaje de respuesta
-    const mensaje = `🎉 *Felicidades* 🎉\n\n@${seleccionado} has sido seleccionado al azar. ¡Disfruta tu día!`;
+    const mensaje = `🗣️ *Felicidades* 🎉\n\n@${seleccionado} has sido seleccionado al Agust-Ai. ¡Disfruta!`;
 
     // Enviar el mensaje al chat mencionando al usuario seleccionado
     await conn.sendMessage(m.chat, { text: mensaje, mentions: [seleccionado] }, { quoted: m });
