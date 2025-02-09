@@ -13,10 +13,10 @@ let handler = async (m, { conn }) => {
     const seleccionado = texto[indiceAleatorio];
 
     // Crear el mensaje de respuesta
-    const mensaje = `🎉 *Felicidades* 🎉\n\n@${seleccionado} ha sido seleccionado al azar. ¡Disfruta tu día!`;
+    const mensaje = `🎉 *Felicidades* 🎉\n\n@${usuario} ha sido seleccionado al azar. ¡Disfruta tu día!`;
 
     // Enviar el mensaje al chat mencionando al usuario seleccionado
-    await conn.sendMessage(m.chat, { text: mensaje, mentions: [seleccionado] }, { quoted: m });
+    await conn.sendMessage(m.chat, { text: mensaje, mentions: [@usuario] }, { quoted: m });
 }
 
 // Comando para seleccionar
