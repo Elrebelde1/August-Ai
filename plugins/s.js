@@ -8,17 +8,18 @@ let handler = async (m, { conn }) => {
         return conn.sendMessage(m.chat, { text: "¡Por favor proporciona nombres o menciona usuarios para seleccionar!" }, { quoted: m });
     }
 
-    // Seleccionar un nombre al azar
+    // Seleccionar un nombre al azar de la lista
     const indiceAleatorio = Math.floor(Math.random() * texto.length);
     const seleccionado = texto[indiceAleatorio];
 
     // Crear el mensaje de respuesta
-    const mensaje = `🗣️ *Felicidades* 🎉\n\n@${seleccionado} has sido seleccionado al Agust-Ai. ¡Disfruta!`;
+    const mensaje = `🎉 *Felicidades* 🎉\n\n@${seleccionado} ha sido seleccionado al azar. ¡Disfruta tu día!`;
 
     // Enviar el mensaje al chat mencionando al usuario seleccionado
     await conn.sendMessage(m.chat, { text: mensaje, mentions: [seleccionado] }, { quoted: m });
 }
 
+// Comando para seleccionar
 handler.help = ['seleccionar nombre1 nombre2 nombre3 ...'];
 handler.tags = ['juegos'];
 handler.command = ['seleccionar'];
