@@ -5,23 +5,23 @@ let handler = async (m, { conn }) => {
 
     // Verificar si hay usuarios mencionados o nombres
     if (texto.length === 0) {
-        return conn.sendMessage(m.chat, { text: "¡Por favor proporciona nombres o menciona usuarios para seleccionar!" }, { quoted: m });
+        return conn.sendMessage(m.chat, { text: "¡Por favor proporciona nombres o menciona usuarios para elegir!" }, { quoted: m });
     }
 
     // Seleccionar un nombre al azar de la lista
     const indiceAleatorio = Math.floor(Math.random() * texto.length);
-    const seleccionado = texto[indiceAleatorio];
+    const elegido = texto[indiceAleatorio];
 
     // Crear el mensaje de respuesta
-    const mensaje = `🎉 *Felicidades* 🎉\n\n@${usuario} ha sido seleccionado al azar. ¡Disfruta tu día!`;
+    const mensaje = `🎉 *Felicidades* 🎉\n\n@${elegido} ha sido elegido al azar. ¡Disfruta tu día!`;
 
-    // Enviar el mensaje al chat mencionando al usuario seleccionado
-    await conn.sendMessage(m.chat, { text: mensaje, mentions: [@usuario] }, { quoted: m });
+    // Enviar el mensaje al chat mencionando al usuario elegido
+    await conn.sendMessage(m.chat, { text: mensaje, mentions: [elegido] }, { quoted: m });
 }
 
-// Comando para seleccionar
-handler.help = ['seleccionar nombre1 nombre2 nombre3 ...'];
+// Comando para elegir
+handler.help = ['elegir nombre1 nombre2 nombre3 ...'];
 handler.tags = ['juegos'];
-handler.command = ['seleccionar'];
+handler.command = ['elegir'];
 
 export default handler;
