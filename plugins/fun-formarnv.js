@@ -1,37 +1,28 @@
 
-const handler = async (m, { conn }) => {
-  // Verificar si el mensaje es de un grupo
-  if (!m.isGroup) {
-    return conn.sendMessage(m.chat, { text: "Este comando solo se puede usar en grupos." }, { quoted: m });
-  }
+let toM = a => '@' + a.split('@')[0];
 
+function handler(m, { groupMetadata }) {
   // Obtener los participantes del grupo
-  const participantes = m.groupMetadata ? m.groupMetadata.participants.map(participant => participant.id) : [];
+  let ps = groupMetadata.participants.map(v => v.id);
+  
+  // Seleccionar un usuario al azar
+  let a = ps.getRandom();
+  let b;
+  
+  // Asegurarse de que no se seleccione el mismo usuario
+  do {
+    b = ps.getRandom();
+  } while (b === a);
+  
+  // Enviar el mensaje de la pareja seleccionada
+  m.reply(`*${toM(a)}, 𝙳𝙴𝙱𝙴𝚁𝙸𝙰𝚂 Hacerte  NV 𝙲𝙾𝙽 ${toM(b)}, 𝙷𝙰𝙲𝙴𝙽 𝚄𝙽𝙰 𝙱𝚄𝙴𝙽𝙰 𝙿𝙰𝚁𝙴𝙹𝙰 💓*`, null, {
+    mentions: [a, b]
+  });
+}
 
-  // Verificar que haya al menos 2 participantes
-  if (participantes.length < 2) {
-    return conn.sendMessage(m.chat, { text: "No hay suficientes participantes en el grupo." }, { quoted: m });
-  }
+handler.help = ['formarnv'];
+handler.tags = ['fun'];
+handler.command = ['formarnv'];
+handler.group = true;
 
-  // Seleccionar al azar dos usuarios
-  const pareja1 = participantes[Math.floor(Math.random() * participantes.length)];
-  let pareja2 = participantes[Math.floor(Math.random() * participantes.length)];
-
-  // Asegurarse de que sean diferentes
-  while (pareja1 === pareja2) {
-    pareja2 = participantes[Math.floor(Math.random() * participantes.length)];
-  }
-
-  // Obtener nombres o números de teléfono de los usuarios seleccionados
-  const nombre1 = await conn.getName(pareja1);
-  const nombre2 = await conn.getName(pareja2);
-
-  // Crear el mensaje
-  const mensaje = `💖 *Estos van a ser novios en 2025* 💖\n\n${nombre1} ❤️ ${nombre2}`;
-
-  // Enviar el mensaje al grupo
-  conn.sendMessage(m.chat, { text: mensaje }, { quoted: m });
-};
-
-handler.command = /^(formarnv)$/i;
 export default handler;
