@@ -1,79 +1,46 @@
+import { createHash } from 'crypto'
 
-import { createHash } from 'crypto';
-
-let mssg = {
-  regIsOn: 'El usuario ya está registrado',
-  useCmd: 'Uso del comando',
-  name: 'Nombre',
-  age: 'Edad',
-  gender: 'Género',
-  man: 'Hombre',
-  woman: 'Mujer',
-  other: 'Otro',
-  genderList: 'Lista de géneros',
-  nameMax: 'El nombre es demasiado largo',
-  oldReg: 'La edad es demasiado alta',
-  regOn: 'Registro realizado correctamente',
-  numSn: 'Número de serie'
-};
-
-let Reg = /\|?(.*)([.|+] *?)([0-9]*)([.|+] *?)([MFNO])?$/i;
-
+let Reg = /\|?(.*)([.|] *?)([0-9]*)$/i
 let handler = async function (m, { conn, text, usedPrefix, command }) {
-  let user = global.db.data.users[m.sender];
-  let name2 = conn.getName(m.sender);
-  let pp = await conn.profilePictureUrl(m.sender, 'image').catch(_ => './avatar_contact.png');
+    let user = global.db.data.users[m.sender]
+    let name2 = conn.getName(m.sender)
+    let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? this.user.jid : m.sender
+    let pp = await this.profilePictureUrl(who, 'image').catch(_ => 'https://i.ibb.co/1fx3bv01/file.jpg')
 
-  if (user.registered === true) throw `✳️ ${mssg.regIsOn}\n\n${usedPrefix}unreg <sn>`;
+    if (user.registered === true) throw `*⚠️ Ya estás registrado*\n\n¿Quiere volver a registrarse?\n\n💬 Use este comando para *eliminar su registro*\n*${usedPrefix}unreg* <Número de serie>`
+    if (!Reg.test(text)) throw `*⚠️ Formato incorrecto*\n\n📝 Uso del comando: *${usedPrefix + command} nombre.edad*\n💡 Ejemplo : *${usedPrefix + command}* ${name2}.18`
 
-  let te = `✳️ ${mssg.useCmd}: *${usedPrefix + command} ${mssg.name}+${mssg.age}+${mssg.gender}* 📌 Ejemplo: *${usedPrefix + command}* Fz+17+M\n\n◉ ${mssg.genderList}: *- M* = ${mssg.man}, *- F* = ${mssg.woman}, *- N* = ${mssg.other}`;
+    let [_, name, splitter, age] = text.match(Reg)
+    if (!name) throw '*📝 El nombre no puede estar vacío*'
+    if (!age) throw '*📝 La edad no puede estar vacía*'
+    if (name.length >= 30) throw '*⚠️ El nombre es demasiado largo*' 
+    age = parseInt(age)
+    if (age > 100) throw '*👴🏻 Wow el abuelo quiere jugar al bot*'
+    if (age < 5) throw '*👀 hay un bebé jsjsj*'
 
-  if (!Reg.test(text)) throw te;
+    user.name = name.trim()
+    user.age = age
+    user.regTime = + new Date
+    user.registered = true
 
-  let [_, name, splitter, age, splitter2, gen] = text.match(Reg);
-  if (!name) throw te;
-  if (!age) throw te;
+    if (!user.limit) user.limit = 0;
+    user.limit += 10;
 
-  name = name.trim();
-  if (name.length >= 30) throw `✳️ ${mssg.nameMax}`;
+    let sn = createHash('md5').update(m.sender).digest('hex').slice(0, 6)        
+    m.react('📩') 
 
-  age = parseInt(age);
-  if (age > 60) throw `👴🏻 ${mssg.oldReg}`;
-  if (age < 10) throw '🚼 Vaya a ver la vaca lola';
+    let regbot =`🗃️ *R E G I S T R A D O* 🗃️\n
+💌 *Nombre:* ${name}
+📆 *Edad* : ${age} años
 
-  let genStr;
-  if (gen) {
-    genStr = gen.toUpperCase() === 'M' ? `🙆🏻‍♂️ ${mssg.man}` :
-             gen.toUpperCase() === 'F' ? `🤵🏻‍♀️ ${mssg.woman}` :
-             gen.toUpperCase() === 'N' ? `⚧ ${mssg.other}` : null;
-  }
+    await conn.sendMessage(m.chat, { 
+        image: { url: pp }, 
+        caption: regbot 
+    }, { quoted: m })
+}
 
-  if (!genStr) throw `✳️ ${mssg.genderList}: M, F o N\n\n*- M* = ${mssg.man}\n*- F* = ${mssg.woman}\n*- N* = ${mssg.other}`;
+handler.help = ['reg']
+handler.tags = ['rg']
+handler.command = ['verify', 'reg', 'verificar'] 
 
-  user.name = name;
-  user.age = age;
-  user.genero = genStr;
-  user.regTime = +new Date();
-  user.coin += 8400;
-
-  let sn = createHash('md5').update(m.sender).digest('hex');
-
-  let regi =
-`┌─「 *${mssg.regOn.toUpperCase()}* 」─
-│ *${mssg.name}:* ${name}
-│ *${mssg.age}:* ${age}
-│ *${mssg.gender}:* ${genStr}
-│ *${mssg.numSn}:*
-${sn}
-└──────────────
-
-\\\⏍ Como bono por tu registro, se te han añadido 8400 coins 🪙 a tu cuenta de banco 🏦\\\`;
-
-  conn.sendFile(m.chat, pp, 'img.jpg', regi, m);
-};
-
-handler.help = ['reg'].map(v => v + ' <nombre.edad.género>');
-handler.tags = ['rg'];
-handler.command = ['verify', 'reg', 'register', 'registrar', 'verificar'];
-
-export default handler;
+export default handler
