@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 
 export async function before(m, { conn }) {
-let name = '_🤖August-Ai⚡_'
+let name = '🤖August-Ai⚡'
 let imagenes = ["https://qu.ax/Knajw.jpg",
 "https://qu.ax/Knajw.jpg",
 "https://qu.ax/Knajw.jpg",
