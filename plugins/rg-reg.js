@@ -5,7 +5,7 @@ let handler = async function (m, { conn, text, usedPrefix, command }) {
     let user = global.db.data.users[m.sender];
     let name2 = conn.getName(m.sender);
     let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? this.user.jid : m.sender;
-    let pp = await this.profilePictureUrl(who, 'image').catch(_ => 'https://qu.ax/Knajw.jpg');
+    let pp = await this.profilePictureUrl(who, 'image').catch(_ => 'https://i.ibb.co/1fx3bv01/file.jpg');
 
     if (user.registered === true) throw `*⚠️ Ya estás registrado*\n\n¿Quieres volver a registrarte?\n\n💬 Usa este comando para *eliminar tu registro*:\n*${usedPrefix}unreg* <Número de serie>`;
     if (!Reg.test(text)) throw `*⚠️ Formato incorrecto*\n\n📝 Uso del comando: *${usedPrefix + command} nombre.edad*\n💡 Ejemplo : *${usedPrefix + command}* ${name2}.18`;
