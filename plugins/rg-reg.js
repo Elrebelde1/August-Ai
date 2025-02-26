@@ -1,35 +1,58 @@
-import { createHash } from 'crypto'
-import fs from 'fs'
-import fetch from 'node-fetch'
+import { createHash } from 'crypto';
 
-let Reg = /\|?(.*)([.|] *?)([0-9]*)$/i
+let Reg = /\|?(.*)([.|] *?)([0-9]*)$/i;
 let handler = async function (m, { conn, text, usedPrefix, command }) {
-  let user = global.db.data.users[m.sender]
-  let name2 = conn.getName(m.sender)
-  if (user.registered === true) return m.reply(`🧑‍💻 YA ESTAS REGISTRADO.\n\n*¿QUIERES HACERLO DE NUEVO?*\n\nUSE ESTE COMANDO PARA ELIMINAR SU REGISTRO.\n*${usedPrefix}unreg* <Número de serie>`)
-  if (!Reg.test(text)) return m.reply(`⚡ 𝐅𝐎𝐑𝐌𝐀𝐓𝐎 𝐈𝐍𝐂𝐎𝐑𝐄𝐂𝐓𝐎.\n\nUSO 𝐃𝐄𝐋 𝐂𝐎𝐌𝐀𝐍𝐃𝐎: *${usedPrefix + command} 𝑵𝑶𝑴𝑩𝑹𝑬.𝑬𝑫𝑨𝑫*\n𝑬𝑱𝑬𝑴𝑷𝑳𝑶 : *${usedPrefix + command} ${name2}.16*`)
-  let [_, name, splitter, age] = text.match(Reg)
-  if (!name) return m.reply('👻 𝑬𝑳 𝑵𝑶𝑴𝑩𝑹𝑬 𝑵𝑶 𝑷𝑼𝑬𝑫𝑬 𝑬𝑺𝑻𝑨𝑹 𝑽𝑨𝑪𝑰𝑶.')
-  if (!age) return m.reply('👻 𝑳𝑨 𝑬𝑫𝑨𝑫 𝑵𝑶 𝑷𝑼𝑬𝑫𝑬 𝑬𝑺𝑻𝑨𝑹 𝑽𝑨𝑪𝑰𝑨.')
-  if (name.length >= 100) return m.reply('🫥 𝑬𝑳 𝑵𝑶𝑴𝑩𝑹𝑬 𝑬𝑺𝑻𝑨 𝑴𝑼𝒀 𝑳𝑨𝑹𝑮𝑶.' )
-  age = parseInt(age)
-  if (age > 100) return m.reply('👴🏻 𝑾𝑶𝑾 𝑬𝑳 𝑨𝑩𝑼𝑬𝑳𝑶 𝑸𝑼𝑰𝑬𝑹𝑬 𝑱𝑼𝑮𝑨𝑹 𝑨𝑳 𝑩𝑶𝑻.')
-  if (age < 5) return m.reply('🚼 𝑬𝑳 𝑩𝑬𝑩𝑬 𝑸𝑼𝑰𝑬𝑹𝑬 𝑱𝑼𝑮𝑨𝑹 𝑱𝑨𝑱𝑨. ')
-  user.name = name.trim()
-  user.age = age
-  user.regTime = + new Date
-  user.registered = true
-  let sn = createHash('md5').update(m.sender).digest('hex')
-  let img = await (await fetch(`https://qu.ax/Knajw.jpg`)).buffer()
-  let txt = ` –  *Bienvenido A August-Ai*\n\n`
-      txt += `╔  👤  *NOMBRE* : ${name}\n`
-      txt += `╠  💎  *EDAD* : ${age} años\n`
-await conn.sendAi(m.chat, botname, textbot, txt, img, img, canal, m)
-await m.react('✅')
-}
-handler.help = ['reg'].map(v => v + ' *<nombre.edad>*')
-handler.tags = ['rg']
+    let user = global.db.data.users[m.sender];
+    let name2 = conn.getName(m.sender);
+    let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? this.user.jid : m.sender;
+    let pp = await this.profilePictureUrl(who, 'image').catch(_ => 'https://qu.ax/Knajw.jpg');
 
-handler.command = ['verify', 'reg', 'register', 'registrar'] 
+    if (user.registered === true) throw `*⚠️ Ya estás registrado*\n\n¿Quieres volver a registrarte?\n\n💬 Usa este comando para *eliminar tu registro*:\n*${usedPrefix}unreg* <Número de serie>`;
+    if (!Reg.test(text)) throw `*⚠️ Formato incorrecto*\n\n📝 Uso del comando: *${usedPrefix + command} nombre.edad*\n💡 Ejemplo : *${usedPrefix + command}* ${name2}.18`;
 
-export default handler
+    let [_, name, splitter, age] = text.match(Reg);
+    if (!name) throw '*📝 El nombre no puede estar vacío*';
+    if (!age) throw '*📝 La edad no puede estar vacía*';
+    if (name.length >= 30) throw '*⚠️ El nombre es demasiado largo*'; 
+    age = parseInt(age);
+    if (age > 100) throw '*👴🏻 Wow el abuelo quiere jugar con el bot*';
+    if (age < 5) throw '*👀 Hay un bebé jsjsj*';
+
+    user.name = name.trim();
+    user.age = age;
+    user.regTime = + new Date();
+    user.registered = true;
+
+    if (!user.limit) user.limit = 0;
+    user.limit += 10;
+
+    let sn = createHash('md5').update(m.sender).digest('hex').slice(0, 6);
+    m.react('📩');
+
+    let regbot = `🗃️ *R E G I S T R A D O* 🗃️\n
+💌 *Nombre:* ${name}
+📆 *Edad* : ${age} años
+🍬 *Dulces añadidos:* 10`;
+
+    // Crear botón de "Menú"
+    const buttons = [
+        {
+            buttonId: `${usedPrefix}menu`,
+            buttonText: { displayText: "📜 Menú" },
+            type: 1
+        }
+    ];
+
+    await conn.sendMessage(m.chat, { 
+        image: { url: pp }, 
+        caption: regbot,
+        buttons: buttons,
+        viewOnce: true
+    }, { quoted: m });
+};
+
+handler.help = ['reg'];
+handler.tags = ['rg'];
+handler.command = ['verify', 'reg', 'verificar'];
+
+export default handler;
