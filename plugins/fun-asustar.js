@@ -6,7 +6,8 @@ const asustarHandler = async (m, { conn, usedPrefix }) => {
         return conn.sendMessage(m.chat, "⚠️ Debes mencionar a un usuario para asustar.", { quoted: m });
     }
 
-    const mensaje = "⚠️ *ATENCIÓN* ⚠️ Tu cuenta de WhatsApp ha sido hackeada, despídete.";
+    // Mensaje asustador
+    const mensaje = "😱 ¡Cuidado! Algo aterrador está sucediendo... ¡No mires atrás!";
 
     await conn.sendMessage(user, {
         text: mensaje,
@@ -18,5 +19,4 @@ const asustarHandler = async (m, { conn, usedPrefix }) => {
 
 asustarHandler.command = /^asustar$/i;
 
-export default Handler;
-
+export default asustarHandler;
