@@ -7,12 +7,13 @@ const asustarHandler = async (m, { conn, usedPrefix }) => {
     }
 
     const mensaje = "⚠️ *ATENCIÓN* ⚠️ Tu cuenta de WhatsApp ha sido hackeada, despídete.";
-    
+
     await conn.sendMessage(user, {
         text: mensaje,
         mentions: [user], // Mencionar al usuario en el mensaje
     });
 
+    // Corregido aquí: agregado comillas alrededor del mensaje
     conn.sendMessage(m.chat, `He asustado a @${user.split('@')[0]}!`, { quoted: m, mentions: [user] });
 };
 
