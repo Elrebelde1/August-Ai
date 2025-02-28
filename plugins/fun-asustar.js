@@ -1,7 +1,7 @@
 
 let handler = async (m, { usedPrefix, command, text, conn }) => {
     let mentionedJid = m.mentionedJid[0] || text;
-    if (!mentionedJid) return conn.reply(m.chat, ⚠️ Menciona a alguien para asustarlo.\nEjemplo: ${usedPrefix + command} @usuario, m);
+    if (!mentionedJid) return conn.reply(m.chat, `⚠️ Menciona a alguien para asustarlo.\nEjemplo: ${usedPrefix + command} @usuario`, m);
 
     const progreso = [
         "*🕒 Iniciando acceso a la cuenta...*",
@@ -30,9 +30,9 @@ let handler = async (m, { usedPrefix, command, text, conn }) => {
 
     await delay(2000);
     await conn.sendMessage(m.chat, { 
-        text: ⚠️ *ATENCIÓN* ⚠️\n\n@${mentionedJid.replace(/@s.whatsapp.net/g, '')} tu cuenta de WhatsApp ha sido hackeada. Todos tus datos han sido enviados a un servidor remoto. No hay vuelta atrás..., 
+        text: `⚠️ *ATENCIÓN* ⚠️\n\n@${mentionedJid.replace(/@s.whatsapp.net/g, '')} tu cuenta de WhatsApp ha sido hackeada. Todos tus datos han sido enviados a un servidor remoto. No hay vuelta atrás...`, 
         mentions: [mentionedJid], 
-        edit: key
+        edit: key 
     });
 };
 
@@ -43,4 +43,3 @@ handler.command = ['hacksistem', 'hackear'];
 export default handler;
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
