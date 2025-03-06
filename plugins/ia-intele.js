@@ -20,7 +20,7 @@ throw `*🚨 Lo sentimos, ha ocurrido un error 😔*`;
 }
 }
 handler.tags = ['tools'];
-handler.help = ['botbarboza'];
-handler.command = ['botbarboza'];
+handler.help = ['ias'];
+handler.command = ['ias'];
 
 export default handler;
