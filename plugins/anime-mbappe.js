@@ -20,10 +20,5 @@ const handler = async (m, {conn}) => {
    } 
 }; 
 
-handler.command = /^(mbappé)$/i; 
+handler.command = /^(mbappe)$/i; 
 export default handler;
-```
-
-En este código, he creado una lista llamada `mbappeImages` donde puedes agregar todos los enlaces de las imágenes que desees. Cuando alguien escribe `.mbappé`, el bot enviará cada imagen en la lista una tras otra.
-
-Recuerda reemplazar `'enlace_a_la_imagen_X'` con los enlaces reales que quieras usar. Si necesitas más ayuda o ajustes, ¡solo avísame!
