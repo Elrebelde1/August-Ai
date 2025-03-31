@@ -1,3 +1,2 @@
-### `BOT DESSAROLLADO POR BARBOZA`
+### `BOT AUGUST`
 > *Version 2.0🔥*
-![Menu Principa](https://qu.ax/LJEVX.jpg)
