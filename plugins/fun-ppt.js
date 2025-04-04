@@ -94,8 +94,8 @@ function getResult(user, bot) {
     return "😢 Perdiste...";
 }
 
-gameHandler.help = ['ppt'];
+gameHandler.help = ['game'];
 gameHandler.tags = ['game'];
-gameHandler.command = /^(ppt)$/i;
+gameHandler.command = /^(game)$/i;
 
 export default gameHandler;
