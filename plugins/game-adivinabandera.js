@@ -8,6 +8,11 @@ const banderas = {
     "🇫🇷": "Francia",
     "🇩🇪": "Alemania",
     "🇯🇵": "Japón",
+    "🇦🇷": "Argentina",
+    "🇧🇷": "Brasil",
+    "🇨🇦": "Canadá",
+    "🇮🇹": "Italia",
+    "🇲🇽": "México",
     // Agrega más banderas y países según lo desees
 };
 
@@ -20,8 +25,8 @@ let handler = async (m, { conn }) => {
 
     // Esperar respuesta del usuario
     const filter = response => response.key.remoteJid === m.chat && response.key.fromMe === false;
-    
-    conn.on('message', async (response) => {
+
+    const collector = conn.on('message', async (response) => {
         if (filter(response)) {
             let respuesta_usuario = response.message.conversation;
 
@@ -33,12 +38,14 @@ let handler = async (m, { conn }) => {
             } else {
                 await conn.sendMessage(m.chat, { text: `Incorrecto. La respuesta correcta era ${pais}.` });
             }
+            // Dejar de escuchar respuestas después de una respuesta válida
+            collector();
         }
     });
 }
 
 handler.help = ['adivinabandera'];
-handler.tags = ['game'];
+handler.tags = ['juegos'];
 handler.command = /^adivinabandera$/i;
 
 export default handler;
