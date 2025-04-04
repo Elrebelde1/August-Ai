@@ -1,63 +1,101 @@
-let handler = async (m, { conn, text, command, usedPrefix, args }) => {
-let pp = 'https://www.bighero6challenge.com/images/thumbs/Piedra,-papel-o-tijera-0003318_1584.jpeg'
-if (!args[0]) throw conn.sendHydrated(m.chat, '𝙋𝙄𝙀𝘿𝙍𝘼, 𝙋𝘼𝙋𝙀𝙇, 𝙊 𝙏𝙄𝙅𝙀𝙍𝘼\n\n𝙐𝙨𝙚 𝙡𝙤𝙨 𝙨𝙞𝙜𝙪𝙞𝙚𝙣𝙩𝙚𝙨 𝙘𝙤𝙢𝙖𝙣𝙙𝙤𝙨:\n.ppt 𝙥𝙞𝙚𝙙𝙧𝙖\n.ppt 𝙥𝙖𝙥𝙚𝙡\n.ppt 𝙩𝙞𝙟𝙚𝙧𝙖\n\n𝙐𝙨𝙖𝙧 𝙚𝙣 𝙢𝙞𝙣𝙪𝙨𝙘𝙪𝙡𝙖𝙨', wm, pp, null, null, null, null, [
-['𝙋𝙞𝙚𝙙𝙧𝙖 🥌', `${usedPrefix + command} piedra`],
-['𝙋𝙖𝙥𝙚𝙡 📄', `${usedPrefix + command} papel`],
-['𝙏𝙞𝙟𝙚𝙧𝙖 ✂️', `${usedPrefix + command} tijera`]
-], m)
-var astro = Math.random()
-if (astro < 0.34) {
-astro = 'piedra' 
-} else if (astro > 0.34 && astro < 0.67) {
-astro = 'tijera' 
-} else {
-astro = 'papel'
+// Global variable to store active games
+let activeGames = new Map();
+
+const gameHandler = async (m, { conn, command, args, usedPrefix }) => {
+    if (args.length === 0) {
+        // Activar el juego y mostrar botones para elegir
+        activeGames.set(m.chat, true);
+
+        const caption = `
+🎮 *¡Juego activado!*
+Selecciona tu jugada presionando un botón:
+        `.trim();
+
+        const buttons = [
+            {
+                buttonId: `${usedPrefix}game piedra`,
+                buttonText: { displayText: "🪨 Piedra" },
+                type: 1
+            },
+            {
+                buttonId: `${usedPrefix}game papel`,
+                buttonText: { displayText: "📄 Papel" },
+                type: 1
+            },
+            {
+                buttonId: `${usedPrefix}game tijera`,
+                buttonText: { displayText: "✂️ Tijera" },
+                type: 1
+            }
+        ];
+
+        await conn.sendMessage(
+            m.chat,
+            {
+                text: caption,
+                buttons: buttons,
+                viewOnce: true
+            },
+            { quoted: m }
+        );
+        return;
+    }
+
+    if (!activeGames.get(m.chat)) {
+        return conn.reply(m.chat, `⚠️ Primero activa el juego con *${usedPrefix}game*`, m);
+    }
+
+    let choices = ['piedra', 'papel', 'tijera'];
+    let userChoice = args[0]?.toLowerCase();
+
+    if (!choices.includes(userChoice)) {
+        return conn.reply(m.chat, `❌ Elige una opción válida`, m);
+    }
+
+    let botChoice = choices[Math.floor(Math.random() * choices.length)];
+    let result = getResult(userChoice, botChoice);
+
+    const caption = `
+🤖 *El bot eligió*: ${botChoice.toUpperCase()}
+🙋‍♂️ *Tú elegiste*: ${userChoice.toUpperCase()}
+📌 *Resultado*: ${result}
+`.trim();
+
+    const buttons = [
+        {
+            buttonId: `${usedPrefix}game`,
+            buttonText: { displayText: "🔄 Nuevo Juego" },
+            type: 1
+        }
+    ];
+
+    await conn.sendMessage(
+        m.chat,
+        {
+            text: caption,
+            buttons: buttons,
+            viewOnce: true
+        },
+        { quoted: m }
+    );
+
+    activeGames.delete(m.chat); // Terminar la partida
+};
+
+function getResult(user, bot) {
+    if (user === bot) return "🤝 ¡Empate!";
+    if (
+        (user === 'piedra' && bot === 'tijera') ||
+        (user === 'papel' && bot === 'piedra') ||
+        (user === 'tijera' && bot === 'papel')
+    ) {
+        return "🎉 ¡Ganaste!";
+    }
+    return "😢 Perdiste...";
 }
-if (text == astro) {
-global.db.data.users[m.sender].exp += 500
-m.reply(`🔰 Empate!\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n🎁 Premio +500 XP*`)
-} else if (text == 'papel') {
-if (astro == 'piedra') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 Tú ganas! 🎉\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n🎁 Premio +1000 XP*`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ Tú pierdes! ❌\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n❌ Premio -300 XP*`)
-}
-} else if (text == 'tijera') {
-if (astro == 'papel') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 Tú ganas! 🎉\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n🎁 Premio +1000 XP*`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ Tú pierdes! ❌\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n❌ Premio -300 XP*`)
-}
-} else if (text == 'tijera') {
-if (astro == 'papel') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 Tú ganas! 🎉\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n🎁 Premio +1000 XP*`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ Tú pierdes! ❌\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n❌ Premio -300 XP*`)
-}
-} else if (text == 'papel') {
-if (astro == 'piedra') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 Tú ganas! 🎉\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n🎁 Premio +1000 XP*`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ Tú pierdes! ❌\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n❌ Premio -300 XP*`)
-}
-} else if (text == 'piedra') {
-if (astro == 'tijera') {
-global.db.data.users[m.sender].exp += 1000
-m.reply(`🥳 Tú ganas! 🎉\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n🎁 Premio +1000 XP*`)
-} else {
-global.db.data.users[m.sender].exp -= 300
-m.reply(`☠️ Tú pierdes! ❌\n\n*👉🏻 Tu: ${text}\n👉🏻 El Bot: ${astro}\n❌ Premio -300 XP*`)
-}
-}}
-handler.help = ['ppt']
-handler.tags = ['fun']
-handler.command = /^(ppt)$/i
-export default handler
+
+gameHandler.help = ['ppt'];
+gameHandler.tags = ['game'];
+gameHandler.command = /^(ppt)$/i;
+
+export default gameHandler;
