@@ -1,3 +1,4 @@
+
 import axios from "axios";
 
 let handler = async (m, { conn, args }) => {
@@ -15,7 +16,7 @@ let handler = async (m, { conn, args }) => {
     const listaEnLinea =
       participantesOrdenados
         .map((k, i) => `*${i + 1}.* @${k.split("@")[0]}`)
-        .join("\n") || "No hay usuarios en linea en este momento By Agust
+        .join("\n") || "No hay usuarios en línea en este momento.";
 
     const imgUrl = "https://files.catbox.moe/y4l6ec.jpg";
     const responseImg = await axios.get(imgUrl, {
@@ -26,7 +27,7 @@ let handler = async (m, { conn, args }) => {
       m.chat,
       responseImg.data,
       "thumbnail.png",
-      `*🌐 Lista de usuarios en línea ahora ♡:*\n${listaEnLinea}\n\n\botbarboza
+      `*🌐 Lista de usuarios en línea ahora ♡:*\n${listaEnLinea}\n\n`,
       m,
       {
         contextInfo: { mentionedJid: participantesOrdenados },
@@ -36,7 +37,7 @@ let handler = async (m, { conn, args }) => {
     await m.react("✅");
   } catch (error) {
     console.error(error);
-    await m.reply("Hubo un error al enviar  la imagen.");
+    await m.reply("Hubo un error al enviar la imagen.");
   }
 };
 
