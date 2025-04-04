@@ -13,7 +13,6 @@ const banderas = {
     "🇨🇦": "Canadá",
     "🇮🇹": "Italia",
     "🇲🇽": "México",
-    // Agrega más banderas y países según lo desees
 };
 
 let handler = async (m, { conn }) => {
@@ -33,19 +32,18 @@ let handler = async (m, { conn }) => {
             // Verificar respuesta
             if (respuesta_usuario.toLowerCase() === pais.toLowerCase()) {
                 await conn.sendMessage(m.chat, { text: `¡Correcto! Has ganado 1000 exp.` });
-                // Aquí puedes agregar el código para otorgar experiencia al usuario
                 global.db.data.users[m.sender].exp += 1000; // Asegúrate de que el sistema de usuarios esté configurado
             } else {
                 await conn.sendMessage(m.chat, { text: `Incorrecto. La respuesta correcta era ${pais}.` });
             }
             // Dejar de escuchar respuestas después de una respuesta válida
-            collector();
+            collector.off('message', ...); // Aquí deberías especificar lo que quieres dejar de escuchar.
         }
     });
 }
 
 handler.help = ['adivinabandera'];
-handler.tags = ['juegos'];
+handler.tags = ['game'];
 handler.command = /^adivinabandera$/i;
 
 export default handler;
