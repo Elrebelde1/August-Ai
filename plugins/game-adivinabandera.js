@@ -1,50 +1,50 @@
 
+import fs from 'fs';
 import fetch from 'node-fetch';
 
-// Diccionario de banderas y sus respectivos países
-const banderas = {
-    "🇺🇸": "Estados Unidos",
-    "🇬🇧": "Reino Unido",
-    "🇫🇷": "Francia",
-    "🇩🇪": "Alemania",
-    "🇯🇵": "Japón",
-    "🇦🇷": "Argentina",
-    "🇧🇷": "Brasil",
-    "🇨🇦": "Canadá",
-    "🇮🇹": "Italia",
-    "🇲🇽": "México",
-    // Agrega más banderas y países según lo desees
-};
+let timeout = 5000; // Tiempo en milisegundos
+let poin = 10000; // Puntos que se ganan al acertar
 
-let handler = async (m, { conn }) => {
-    let bandera = Object.keys(banderas)[Math.floor(Math.random() * Object.keys(banderas).length)];
-    let pais = banderas[bandera];
+let handler = async (m, { conn, usedPrefix }) => {
+    const apiUrl = 'https://api-kasu.onrender.com/api/game/bandera?apikey=79242cc3';
+    
+    const response = await fetch(apiUrl);
+    const data = await response.json();
 
-    // Enviar la bandera al usuario
-    await conn.sendMessage(m.chat, { text: `Adivina el país de esta bandera: ${bandera}` });
+    conn.tekateki = conn.tekateki ? conn.tekateki : {};
+    let id = m.chat;
+    
+    if (id in conn.tekateki) {
+        return conn.reply(m.chat, 'Todavía hay un juego sin terminar!', conn.tekateki[id][0]);
+    }
+    
+    let textos = `
+ⷮ *Adivina el nombre de la bandera de la foto*
+*Nota: Pusimos 2 minutos para poder visualizar la imagen bien ya que está borrosa, estamos mejorando eso, en muy poco tiempo estará lista con foto HD.*
 
-    // Esperar respuesta del usuario
-    const filter = response => response.key.remoteJid === m.chat && response.key.fromMe === false;
+*Tiempo:* ${(timeout / 1000).toFixed(2)} segundos
+*Bono:* +${poin} Exp
 
-    const collector = conn.on('message', async (response) => {
-        if (filter(response)) {
-            let respuesta_usuario = response.message.conversation;
+Recuerda responder con el nombre completo!
+`.trim();
 
-            // Verificar respuesta
-            if (respuesta_usuario.toLowerCase() === pais.toLowerCase()) {
-                await conn.sendMessage(m.chat, { text: `¡Correcto! Has ganado 1000 exp.` });
-                global.db.data.users[m.sender].exp += 1000; // Asegúrate de que el sistema de usuarios esté configurado
-            } else {
-                await conn.sendMessage(m.chat, { text: `Incorrecto. La respuesta correcta era ${pais}.` });
+    // Enviar la imagen de la bandera
+    conn.tekateki[id] = [
+        await conn.sendFile(m.chat, data.img, 'bandera.jpg', textos, m),
+        data.answer.toLowerCase(), // Respuesta correcta
+        poin,
+        setTimeout(async () => {
+            if (conn.tekateki[id]) {
+                await conn.reply(m.chat, '¡Se acabó el tiempo! Intenta resolver de nuevo.', conn.tekateki[id][0]);
+                delete conn.tekateki[id];
             }
-            // Dejar de escuchar respuestas después de una respuesta válida
-            collector(); // Aquí se debería detener el collector.
-        }
-    });
+        }, timeout)
+    ];
 }
 
+// Comandos para el handler
 handler.help = ['adivinabandera'];
-handler.tags = ['juegos'];
-handler.command = /^adivinabandera$/i;
+handler.tags = ['game'];
+handler.command = /^(adivinabandera|bandera|banderade|banderapais)$/i;
 
 export default handler;
