@@ -1,44 +1,104 @@
-import fs from 'fs'
+const banderas = [
+  { pais: "Honduras", emoji: "🇭🇳" },
+  { pais: "México", emoji: "🇲🇽" },
+  { pais: "Brasil", emoji: "🇧🇷" },
+  { pais: "Argentina", emoji: "🇦🇷" },
+  { pais: "Colombia", emoji: "🇨🇴" },
+  { pais: "Chile", emoji: "🇨🇱" },
+  { pais: "Perú", emoji: "🇵🇪" },
+  { pais: "Venezuela", emoji: "🇻🇪" },
+  { pais: "Uruguay", emoji: "🇺🇾" },
+  { pais: "Bolivia", emoji: "🇧🇴" },
+  { pais: "Guatemala", emoji: "🇬🇹" },
+  { pais: "Nicaragua", emoji: "🇳🇮" },
+  { pais: "Costa Rica", emoji: "🇨🇷" },
+  { pais: "El Salvador", emoji: "🇸🇻" },
+  { pais: "Panamá", emoji: "🇵🇦" },
+  { pais: "Paraguay", emoji: "🇵🇾" },
+  { pais: "Cuba", emoji: "🇨🇺" },
+  { pais: "República Dominicana", emoji: "🇩🇴" },
+  { pais: "Estados Unidos", emoji: "🇺🇸" },
+  { pais: "Canadá", emoji: "🇨🇦" },
+  { pais: "España", emoji: "🇪🇸" },
+  { pais: "Francia", emoji: "🇫🇷" },
+  { pais: "Alemania", emoji: "🇩🇪" },
+  { pais: "Italia", emoji: "🇮🇹" },
+  { pais: "Reino Unido", emoji: "🇬🇧" },
+  { pais: "Portugal", emoji: "🇵🇹" },
+  { pais: "Rusia", emoji: "🇷🇺" },
+  { pais: "Noruega", emoji: "🇳🇴" },
+  { pais: "Suecia", emoji: "🇸🇪" },
+  { pais: "Finlandia", emoji: "🇫🇮" },
+  { pais: "Países Bajos", emoji: "🇳🇱" },
+  { pais: "Grecia", emoji: "🇬🇷" },
+  { pais: "Irlanda", emoji: "🇮🇪" }  
+  { pais: "Japón", emoji: "🇯🇵" },
+  { pais: "China", emoji: "🇨🇳" },
+  { pais: "India", emoji: "🇮🇳" },
+  { pais: "Corea del Sur", emoji: "🇰🇷" },
+  { pais: "Vietnam", emoji: "🇻🇳" },
+  { pais: "Filipinas", emoji: "🇵🇭" },
+  { pais: "Indonesia", emoji: "🇮🇩" },
+  { pais: "Tailandia", emoji: "🇹🇭" },
+  { pais: "Arabia Saudita", emoji: "🇸🇦" },
+  { pais: "Israel", emoji: "🇮🇱" },
+  { pais: "Sudáfrica", emoji: "🇿🇦" },
+  { pais: "Nigeria", emoji: "🇳🇬" },
+  { pais: "Kenia", emoji: "🇰🇪" },
+  { pais: "Egipto", emoji: "🇪🇬" },
+  { pais: "Marruecos", emoji: "🇲🇦" },
+  { pais: "Argelia", emoji: "🇩🇿" }, 
+  { pais: "Australia", emoji: "🇦🇺" },
+  { pais: "Nueva Zelanda", emoji: "🇳🇿" },
+  { pais: "Fiyi", emoji: "🇫🇯" },
+  { pais: "LGBT", emoji: "🏳️‍🌈" },
+  { pais: "Orgullo trans", emoji: "🏳️‍⚧️" },
+  { pais: "ONU", emoji: "🇺🇳" },
+  { pais: "Palestina", emoji: "🇵🇸" },
+  { pais: "Ucrania", emoji: "🇺🇦" }
+]
 
-let timeout = 5000
-let poin = 10000
+const juegoBanderas = new Map()
 
-let handler = async (m, { conn, usedPrefix }) => {
+function elegirBanderaAleatoria() {
+  return banderas[Math.floor(Math.random() * banderas.length)]
+}
 
-    const apiUrl = 'https://api-kasu.onrender.com/api/game/bandera?apikey=79242cc3';
-    const name = await fetch(apiUrl);
-    const data = await name.json();
+let handler = async (m, { conn }) => {
+  if (juegoBanderas.has(m.sender)) {
+    return conn.reply(m.chat, "Ya tienes un juego en curso. ¡Responde primero!", m)
+  }
 
-    conn.tekateki = conn.tekateki ? conn.tekateki : {}
-    let id = m.chat
-    if (id in conn.tekateki) {
-        conn.reply(m.chat, 'Todavia hay un juego sin terminar!', conn.tekateki[id][0])
-        throw false
+  const seleccionada = elegirBanderaAleatoria()
+  juegoBanderas.set(m.sender, { pais: seleccionada.pais.toLowerCase(), intentos: 2 })
+
+  let text = `🎌 Adivina la bandera:\n\n» ${seleccionada.emoji}\n\n*Responde con el nombre del país.*\nTienes 2 corazones ❤️❤️`
+  conn.reply(m.chat, text, m)
+}
+
+handler.before = async (m, { conn }) => {
+  const juego = juegoBanderas.get(m.sender)
+  if (!juego) return
+
+  const respuesta = m.text.trim().toLowerCase()
+  if (respuesta === juego.pais) {
+    juegoBanderas.delete(m.sender)
+    return conn.reply(m.chat, `¡Correcto! Adivinaste la bandera de *${juego.pais.charAt(0).toUpperCase() + juego.pais.slice(1)}* 🥳`, m)
+  } else {
+    juego.intentos--
+    if (juego.intentos <= 0) {
+      juegoBanderas.delete(m.sender)
+      return conn.reply(m.chat, `❌ Perdiste. La respuesta correcta era *${juego.pais.charAt(0).toUpperCase() + juego.pais.slice(1)}*`, m)
+    } else {
+      return conn.reply(m.chat, `❌ Incorrecto. Te quedan ${juego.intentos} corazón(es) ❤️`, m)
     }
-    let textos = `
-ⷮ *Adivina el nombre de la bandera de la foto*
-*Nota: Pusimos 2 minutos para poder visualizar la imagen bien ya que esta borrosa, estamos mejorando eso, en muy poco tiempo estara lista con foto hd*
-
-
-*Tiempo:* ${(timeout / 1000).toFixed(2)} segundos
-*Bono:* +${poin} Exp
-
-Recuerda responder con el nombre completo!
-`.trim()
-    conn.tekateki[id] = [
-
-       conn.sendFile(m.chat, data.img, 'bandera.jpg', textos, m);
-
-        json, poin,
-        setTimeout(async () => {
-            if (conn.tekateki[id]) await conn.reply(m.chat, `Se acabó el tiempo!, intenta resolver de nuevo.`, conn.tekateki[id][0])
-            delete conn.tekateki[id]
-        }, timeout)
-    ]
+  }
 }
 
 handler.help = ['adivinabandera']
 handler.tags = ['game']
-handler.command = /^(adivinabandera|bandera|banderade|banderapais)$/i
+handler.command = ['adivinabandera']
+handler.group = true
+handler.register = true
 
 export default handler
