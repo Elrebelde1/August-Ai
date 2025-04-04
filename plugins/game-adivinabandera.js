@@ -13,6 +13,7 @@ const banderas = {
     "🇨🇦": "Canadá",
     "🇮🇹": "Italia",
     "🇲🇽": "México",
+    // Agrega más banderas y países según lo desees
 };
 
 let handler = async (m, { conn }) => {
@@ -37,13 +38,13 @@ let handler = async (m, { conn }) => {
                 await conn.sendMessage(m.chat, { text: `Incorrecto. La respuesta correcta era ${pais}.` });
             }
             // Dejar de escuchar respuestas después de una respuesta válida
-            collector.off('message', ...); // Aquí deberías especificar lo que quieres dejar de escuchar.
+            collector(); // Aquí se debería detener el collector.
         }
     });
 }
 
 handler.help = ['adivinabandera'];
-handler.tags = ['game'];
+handler.tags = ['juegos'];
 handler.command = /^adivinabandera$/i;
 
 export default handler;
