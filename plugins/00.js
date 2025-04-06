@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text }) => {
-if (!text) return conn.reply(m.chat, `Ingresa el texto de la cancion que quieras buscar en soundcloud`, m)
+if (!text) return conn.reply(m.chat, `Ingresa el texto o artista de tu música favorita para descargarla ⭐🔥`, m)
 
 try {
 let apiSearch = await fetch(`https://api.siputzx.my.id/api/s/soundcloud?query=${text}`)   
