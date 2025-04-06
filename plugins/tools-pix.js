@@ -32,23 +32,29 @@ handler.register = true;
 export default handler;
 
 async function generateImage(description) {
-    const apiKey = 'https://archive-ui.tanakadomp.biz.id/maker/text2img?text='; // Reemplaza con tu clave de API
-    const apiUrl = `https://archive-ui.tanakadomp.biz.id/maker/text2img?text=`; // Asegúrate de usar la URL correcta de la API
+    const apiUrl = `https://archive-ui.tanakadomp.biz.id/maker/text2img?text=${encodeURIComponent(description)}`; // Usa encodeURIComponent para evitar problemas con caracteres especiales
 
-    const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
-        },
-        body: JSON.stringify({ prompt: description })
-    });
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'GET', // Cambié a GET ya que parece que no necesitas un cuerpo
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
 
-    const data = await response.json();
+        // Verifica si la respuesta es válida
+        if (!response.ok) {
+            throw new Error(`Error en la respuesta de la API: ${response.statusText}`);
+        }
 
-    if (data && data.image_url) {
-        return data.image_url; // Asegúrate de que esta propiedad sea correcta según la respuesta de tu API
-    } else {
-        throw new Error('No se pudo obtener la URL de la imagen.');
+        const data = await response.json();
+
+        if (data && data.image_url) {
+            return data.image_url; // Asegúrate de que esta propiedad sea correcta según la respuesta de tu API
+        } else {
+            throw new Error('No se pudo obtener la URL de la imagen.');
+        }
+    } catch (error) {
+        throw new Error(error.message);
     }
 }
