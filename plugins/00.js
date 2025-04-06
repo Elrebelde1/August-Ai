@@ -1,14 +1,14 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text }) => {
-if (!text) return conn.reply(m.chat, `⭐Ingresa el texto de la cancion que quieras buscar en soundcloud`, m)
+if (!text) return conn.reply(m.chat, `Ingresa el texto de la cancion que quieras buscar en soundcloud`, m)
 
 try {
-let apiSearch = await fetch(`https://archive-ui.tanakadomp.biz.id/search/soundcloud?q=${text}`)   
+let apiSearch = await fetch(`https://api.siputzx.my.id/api/s/soundcloud?query=${text}`)   
 let jsonSearch = await apiSearch.json()
 let { permalink_url:link } = jsonSearch.data[0]
 
-let apiDL = await fetch(`https://archive-ui.tanakadomp.biz.id/search/soundcloud?q=${link}`)
+let apiDL = await fetch(`https://api.siputzx.my.id/api/d/soundcloud?url=${link}`)
 let jsonDL = await apiDL.json()
 let { title, thumbnail, url } = jsonDL.data
 
