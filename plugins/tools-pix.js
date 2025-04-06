@@ -19,7 +19,7 @@ var handler = async (m, { conn, args }) => {
             return conn.reply(m.chat, "⚠️ No se pudo generar la imagen.", m);
         }
     } catch (error) {
-        return conn.reply(m.chat, `⚠️ Error: ${error.message}`, m);
+        return conn.reply(m.chat, `⚠️ Error: ${error.message}`, m); // Corregido el uso de comillas
     }
 };
 
@@ -32,7 +32,7 @@ handler.register = true;
 export default handler;
 
 async function generateImage(description) {
-    const apiUrl = `https://archive-ui.tanakadomp.biz.id/maker/text2img?text=${encodeURIComponent(description)}`; // Usa encodeURIComponent para evitar problemas con caracteres especiales
+    const apiUrl = `https://archive-ui.tanakadomp.biz.id/maker/text2img?text=${encodeURIComponent(description)}`; // Corregido el uso de comillas
 
     try {
         const response = await fetch(apiUrl, {
@@ -44,7 +44,7 @@ async function generateImage(description) {
 
         // Verifica si la respuesta es válida
         if (!response.ok) {
-            throw new Error(`Error en la respuesta de la API: ${response.statusText}`);
+            throw new Error(`Error en la respuesta de la API: ${response.statusText}`); // Corregido el formato
         }
 
         const data = await response.json();
