@@ -1,19 +1,25 @@
 
 let handler = async (m, { conn }) => {
-    // Aquí puedes agregar tu API para obtener el contenido de pack9
-    let apiUrl = 'https://delirius-apiofc.vercel.app/nsfw/boobs'; // Reemplaza esto con la URL de tu API
+    // API para obtener el contenido de pack9
+    let apiUrl = 'https://delirius-apiofc.vercel.app/nsfw/boobs'; 
     let response;
 
     try {
         response = await fetch(apiUrl);
         if (!response.ok) throw new Error('Error en la respuesta de la API');
-        
+
         let data = await response.json();
-        let packContent = data.pack; // Asegúrate de que este campo coincida con la respuesta de tu API
+        let packContent = data; // Ajusta esto si la respuesta tiene un formato diferente
 
         let str = 'Aquí tienes el pack que solicitaste. 🎉';
-        for (let item of packContent) {
-            conn.sendFile(m.chat, item.url, item.name, str, m); // Cambia item.url y item.name según la estructura de tu API
+        
+        // Asegúrate de que 'packContent' sea un array de URLs
+        if (Array.isArray(packContent)) {
+            for (let item of packContent) {
+                conn.sendFile(m.chat, item.url, item.name || 'contenido.jpg', str, m); // Usa un nombre por defecto si no hay nombre
+            }
+        } else {
+            conn.sendMessage(m.chat, 'No se encontró contenido en el pack.', m);
         }
     } catch (error) {
         console.error(error);
