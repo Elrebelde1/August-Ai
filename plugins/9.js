@@ -1,7 +1,7 @@
 
 let handler = async (m, { conn }) => {
-    // API para obtener el contenido de pack9
-    let apiUrl = 'https://delirius-apiofc.vercel.app/nsfw/boobs'; 
+    // API para obtener el contenido de pack8
+    let apiUrl = 'https://delirius-apiofc.vercel.app/nsfw/boobs';
     let response;
 
     try {
@@ -12,7 +12,7 @@ let handler = async (m, { conn }) => {
         let packContent = data; // Ajusta esto si la respuesta tiene un formato diferente
 
         let str = 'Aquí tienes el pack que solicitaste. 🎉';
-        
+
         // Asegúrate de que 'packContent' sea un array de URLs
         if (Array.isArray(packContent)) {
             for (let item of packContent) {
@@ -27,8 +27,8 @@ let handler = async (m, { conn }) => {
     }
 }
 
-handler.help = ['pack9'];
+handler.help = ['pack8'];
 handler.tags = ['pack'];
-handler.command = /^pack9$/i;
+handler.command = /^pack8$/i;
 
 export default handler;
