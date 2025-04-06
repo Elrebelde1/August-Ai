@@ -5,7 +5,7 @@ const handler = async (m, { conn, args }) => {
   }
 
   const countryName = args.join(' ');
-  const apiUrl = `https://api.siputzx.my.id/api/tools/countryInfo?name=${countryName}`;
+  const apiUrl = `https://api.siputzx.my.id/api/tools/countryInfo?name=${countryName}`; // Asegúrate de usar comillas invertidas
 
   try {
     const response = await fetch(apiUrl);
@@ -13,7 +13,7 @@ const handler = async (m, { conn, args }) => {
 
     // Asegúrate de que la respuesta tenga la estructura esperada
     if (data && data.status === 'success') {
-      const countryInfo = data.data; // Asegúrate de que esta estructura sea correcta según la respuesta de la API
+      const countryInfo = data.data; // Verifica que esta estructura sea correcta según la respuesta de la API
       const infoMessage = `
         *Información sobre ${countryInfo.name}:*
         - Capital: ${countryInfo.capital}
