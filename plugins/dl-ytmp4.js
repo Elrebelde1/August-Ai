@@ -61,7 +61,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }
     } else if (command === 'play2' || command === 'ytv' || command === 'ytmp4') {
       try {
-        const response = await fetch(`https://api.vreden.my.id/api/ytmp4?url=${url}`)
+        const response = await fetch(`https://mahiru-shiina.vercel.app/download/ytmp3=${url}`)
         const json = await response.json()
         const resultad = json.result
         const resultado = resultad.download.url
