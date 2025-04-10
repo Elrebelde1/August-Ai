@@ -18,11 +18,11 @@ let handler = async (message, { conn, text, usedPrefix, command }) => {
     }
 
     try {
-        await message.react('⏳') // Emoji de espera
+        await message.react('⏳')
         conn.reply(message.chat, '📥 Descargando su video, espere un momento...', message)
         
         let results = []
-        let { data: response } = await axios.get('https://apis-starlights-team.koyeb.app/starlight/tiktoksearch?text=' + text)
+        let { data: response } = await axios.get('https://api.dorratz.com/v2/tiktok-s?q=$'+ text)
         let searchResults = response.data
         shuffleArray(searchResults)
         
@@ -57,7 +57,7 @@ let handler = async (message, { conn, text, usedPrefix, command }) => {
             }
         }, { quoted: message })
 
-        await message.react('✅') // Emoji de completado
+        await message.react('✅')
         await conn.relayMessage(message.chat, responseMessage.message, { messageId: responseMessage.key.id })
     } catch (error) {
         await conn.reply(message.chat, '❌ Error: ' + error.toString(), message)
