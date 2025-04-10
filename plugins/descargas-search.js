@@ -50,9 +50,9 @@ await conn.relayMessage(message.chat, responseMessage.message, { messageId: resp
 await conn.reply(message.chat, error.toString(), message)
 }}
 
-handler.help = ['search <txt>']
+handler.help = ['tiktoksearch <txt>']
 handler.tags = ['buscador']
-handler.command = [search', 'ttss', 'tiktoks']
+handler.command = ['tiktoksearch', 'ttss', 'tiktoks']
 handler.group = true
 handler.register = true
 handler.coin = 2
