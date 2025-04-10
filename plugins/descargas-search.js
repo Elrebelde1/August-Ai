@@ -22,7 +22,7 @@ let handler = async (message, { conn, text, usedPrefix, command }) => {
         conn.reply(message.chat, '📥 Descargando su video, espere un momento...', message)
         
         let results = []
-        let { data: response } = await axios.get('https://api.dorratz.com/v2/tiktok-s?q=$'+ text)
+        let { data: response } = await axios.get('https://apis-starlights-team.koyeb.app/starlight/tiktoksearch?text=' + text)
         let searchResults = response.data
         shuffleArray(searchResults)
         
