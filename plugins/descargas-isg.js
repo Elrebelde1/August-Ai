@@ -8,7 +8,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     try {
         // Aquí puedes integrar tu API para descargar el video
         // Ejemplo de lógica básica para conectarte a tu API
-        const apiResponse = await fetch(`https://archive-ui.tanakadomp.biz.id/download/instagram?url=$(url)}`);
+        const apiResponse = await fetch(`https://delirius-apiofc.vercel.app/download/instagram?url=$(url)}`);
         if (!apiResponse.ok) throw new Error("Hubo un problema con la API.");
 
         const { videoUrl, title } = await apiResponse.json();
