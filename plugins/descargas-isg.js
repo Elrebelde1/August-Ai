@@ -1,37 +1,29 @@
 
-import axios from 'axios';
-
-let handler = async (m, { conn, args }) => {
-    // Verificar que se haya proporcionado una URL
-    if (!args[0]) {
-        return await conn.sendMessage(m.chat, { text: 'Por favor, proporciona una URL de Instagram.' });
-    }
-
-    // Construir la URL de la API con la URL de Instagram proporcionada
-    const instagramUrl = args[0];
-    const apiUrl = `https://archive-ui.tanakadomp.biz.id/download/instagram?url=${encodeURIComponent(instagramUrl)}`;
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+    const url = args[0];
+    
+    if (!url) return m.reply(`❌ Uso correcto del comando:\n${usedPrefix + command} <url_instagram>`);
+    if (!/^https?:\/\/(www\.)?instagram\.com\/.+$/.test(url)) return m.reply("❌ Por favor, proporciona una URL válida de Instagram.");
 
     try {
-        // Obtener datos de la API
-        const response = await axios.get(apiUrl);
-        
-        // Verificar si la respuesta contiene datos
-        if (response.data && response.data.url) {
-            const downloadLink = response.data.url;
+        // Aquí puedes integrar tu API para descargar el video
+        // Ejemplo de lógica básica para conectarte a tu API
+        const apiResponse = await fetch(`https://archive-ui.tanakadomp.biz.id/download/instagram?url=$(url)}`);
+        if (!apiResponse.ok) throw new Error("Hubo un problema con la API.");
 
-            // Enviar el enlace de descarga al chat
-            await conn.sendMessage(m.chat, { text: `Aquí tienes el enlace para descargar el contenido:\n${downloadLink}` });
-        } else {
-            await conn.sendMessage(m.chat, { text: 'No se encontró contenido para esa URL.' });
-        }
+        const { videoUrl, title } = await apiResponse.json();
+        if (!videoUrl) throw new Error("No se encontró un video para la URL proporcionada.");
 
-        m.react('✅'); // Reacción al mensaje enviado
+        const caption = `🎥 Video descargado de Instagram\n📝 Título: ${title || "Sin título"}\n🔗 URL original: ${url}`;
+        await conn.sendFile(m.chat, videoUrl, "video.mp4", caption, m);
+
     } catch (error) {
-        console.error('Error al obtener datos de Instagram:', error);
-        await conn.sendMessage(m.chat, { text: 'Hubo un error al intentar obtener los datos. Por favor verifica la URL.' });
+        m.reply(`❌ Error al descargar el video: ${error.message}`);
     }
 };
 
-handler.command = ['igs']; // Comando para activar el manejador
+handler.help = [".igs"];
+handler.tags = ["descargas"];
+handler.command = /^igs$/i;
 
 export default handler;
