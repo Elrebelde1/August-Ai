@@ -189,7 +189,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
       },
     ];
 
-    let img = 'https://f.uguu.se/QZgeLswS.jpg';
+    let img = 'https://i.postimg.cc/pLk7s5P1/5fe04780-817e-4b33-84fe-d4ee0ec383de.jpg';
     await m.react('🌪️');
 
     await conn.sendMessage(
