@@ -1,30 +1,34 @@
-import { igdl } from "ruhend-scraper";
 
-let handler = async (m, { args, conn }) => { 
+import fetch from "node-fetch";
+
+const handler = async (m, { conn, args }) => {
     if (!args[0]) {
-        return conn.reply(m.chat, '*\`Ingresa El link Del vídeo a descargar 🤍\`*', m, fake);
+        return m.reply("❗️ Debes proporcionar una URL válida de Instagram.");
     }
+
+    const url = args[0];
+    const apiEndpoint = `https://delirius-apiofc.vercel.app/download/instagram?url=${encodeURIComponent(url)}`;
 
     try {
-        await m.react('🕑');
+        const response = await fetch(apiEndpoint);
+        const data = await response.json();
 
-        let res = await igdl(args[0]);
-        let data = res.data; 
-
-        for (let media of data) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            await m.react('✅');
-            await conn.sendFile(m.chat, media.url, 'instagram.mp4', dev, null, m); 
+        if (!data || !data.video || data.video.length === 0) {
+            return m.reply("⚠️ No se pudo obtener el video. Verifica que la URL sea correcta.");
         }
-    } catch {
-        await m.react('❌');
-    }
-}
 
-handler.corazones = 2
-handler.command = ['ig', 'igdl', 'instagram'];
-handler.tags = ['dl'];
-handler.help = ['ig *<link>*'];
+        const videoUrl = data.video; // Enlace del video obtenido de la API
+        const caption = `🎥 Aquí está tu video de Instagram:\n🔗 ${url}`;
+
+        await conn.sendMessage(m.chat, { video: { url: videoUrl }, caption }, { quoted: m });
+    } catch (error) {
+        console.error("Error al descargar el video:", error);
+        return m.reply("❌ Ocurrió un error al descargar el video. Intenta nuevamente.");
+    }
+};
+
+handler.command = ['ig'];
+handler.help = ['ig <url>'];
+handler.tags = ['downloader'];
 
 export default handler;
