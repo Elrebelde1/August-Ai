@@ -7,7 +7,8 @@ const handler = async (m, { conn, args }) => {
     }
 
     const url = args[0];
-    const apiEndpoint = `https://delirius-apiofc.vercel.app/download/instagram?url=${encodeURIComponent(url)}`;
+    const apiEndpoint = `
+https://archive-ui.tanakadomp.biz.id/download/instagram?url={encodeURIComponent(url)}`;
 
     try {
         const response = await fetch(apiEndpoint);
