@@ -1,35 +1,30 @@
+import { igdl } from "ruhend-scraper";
 
-import fetch from "node-fetch";
-
-const handler = async (m, { conn, args }) => {
+let handler = async (m, { args, conn }) => { 
     if (!args[0]) {
-        return m.reply("❗️ Debes proporcionar una URL válida de Instagram.");
+        return conn.reply(m.chat, '*\`Ingresa El link Del vídeo a descargar 🤍\`*', m, fake);
     }
-
-    const url = args[0];
-    const apiEndpoint = `
-https://archive-ui.tanakadomp.biz.id/download/instagram?url={encodeURIComponent(url)}`;
 
     try {
-        const response = await fetch(apiEndpoint);
-        const data = await response.json();
+        await m.react('🕑');
 
-        if (!data || !data.video || data.video.length === 0) {
-            return m.reply("⚠️ No se pudo obtener el video. Verifica que la URL sea correcta.");
+        let res = await igdl(args[0]);
+        let data = res.data; 
+
+        for (let media of data) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            await m.react('✅');
+            await conn.sendFile(m.chat, media.url, 'instagram.mp4', dev, null, m); 
         }
-
-        const videoUrl = data.video; // Enlace del video obtenido de la API
-        const caption = `🎥 Aquí está tu video de Instagram:\n🔗 ${url}`;
-
-        await conn.sendMessage(m.chat, { video: { url: videoUrl }, caption }, { quoted: m });
-    } catch (error) {
-        console.error("Error al descargar el video:", error);
-        return m.reply("❌ Ocurrió un error al descargar el video. Intenta nuevamente.");
+    } catch {
+        await m.react('❌');
     }
-};
+}
 
-handler.command = ['ig'];
-handler.help = ['ig <url>'];
-handler.tags = ['downloader'];
+handler.corazones = 2
+handler.command = ['ig', 'igdl', 'instagram'];
+handler.tags = ['dl'];
+handler.help = ['ig *<link>*'];
 
 export default handler;
