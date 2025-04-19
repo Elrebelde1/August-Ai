@@ -1,5 +1,5 @@
 {
-  "name": "Bolillo",
+  "name": "Barboza",
   "version": "2.2.0",
   "description": "Super WhatsApp Bot Multi Device",
   "main": "index.js",
@@ -18,16 +18,16 @@
     "eslint": "eslint .",
     "eslintfix": "eslint --fix ."
   },
-  "homepage": "https://github.com/meldexzz/bolibotmensual.git",
+  "homepage": "https://github.com/Elrebelde1/BarbozaBot-Ai.git",
   "author": {
-    "name": "meldexzz"
+    "name": "Barboza"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/meldexzz/bolibotmensual.git"
+    "url": "https://github.com/Elrebelde1/BarbozaBot-Ai.git"
   },
   "bugs": {
-    "url": "https://github.com/meldexzz/bolibotmensual.git"
+    "url": "https://github.com/Elrebelde1/BarbozaBot-Ai.git"
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
@@ -51,7 +51,6 @@
     "fluid-spotify.js": "*",
     "cheerio": "npm:cheerio@1.0.0-rc.12",
     "express": "^4.18.1",
-    "senna-fg": "latest",
     "file-type": "^18.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "formdata-node": "^5.0.0",
