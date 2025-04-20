@@ -41,5 +41,5 @@ const handler = async (m, { conn }) => {
     }
 };
 
-handler.command = /^(adivinamusic)$/i;
+handler.command = /^(adivinamusica)$/i;
 export default handler;
