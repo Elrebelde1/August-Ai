@@ -4,7 +4,7 @@ import { MessageType } from '@whiskeysockets/baileys';
 const songs = [
     { title: "Despacito", artist: "Luis Fonsi", hint: "Es un éxito de 2017 con reguetón." },
     { title: "Shape of You", artist: "Ed Sheeran", hint: "Una canción muy popular de un álbum de 2017." },
-    { title: "Bad Bunny", artist: "DÁKITI", hint: "Colaboración con Jhay Cortez, un éxito urbano." },
+    { title: "DÁKITI", artist: "Bad Bunny", hint: "Colaboración con Jhay Cortez, un éxito urbano." },
     { title: "Blinding Lights", artist: "The Weeknd", hint: "Canción que se volvió viral en TikTok." },
     // Agrega más canciones aquí
 ];
@@ -17,11 +17,8 @@ const handler = async (m, { conn }) => {
                      `¿Cuál crees que es el título?`;
 
         conn.sendMessage(m.chat, { text }, { quoted: m });
-        
+
         // Aquí puedes agregar lógica para manejar las respuestas y verificar si son correctas.
-        // Puedes usar un temporizador o esperar a que el usuario responda.
-        
-        // Ejemplo de cómo manejar la respuesta (deberás implementar esta parte según tu lógica):
         const filter = response => response.text.toLowerCase() === randomSong.title.toLowerCase();
         const collector = conn.createMessageCollector(filter, { time: 30000 }); // 30 segundos para responder
 
