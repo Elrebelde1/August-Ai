@@ -1,21 +1,36 @@
 
 import fetch from 'node-fetch';
 
-const musicGame = {}; // Objeto para almacenar juegos activos
+const musicGame = {}; // Objeto para almacenar los juegos activos
 
 const handler = async (m, { conn, args, usedPrefix, command }) => {
   try {
-    if (!args[0]) throw `❌ Por favor envía el comando junto con un enlace de YouTube.\nEjemplo: *${usedPrefix + command} https://www.youtube.com/watch?v=dQw4w9WgXcQ*`;
+    if (!args[0]) {
+      throw `❌ Por favor envía el comando junto con un enlace de YouTube.\nEjemplo: *${usedPrefix}${command} https://www.youtube.com/watch?v=dQw4w9WgXcQ*`;
+    }
 
     const videoUrl = args[0];
     if (!/^https:\/\/(www\.)?youtube\.com\/watch\?v=/.test(videoUrl)) {
-      throw `❌ El enlace proporcionado no parece ser válido. Por favor, envía un enlace de YouTube.`;
+      throw `❌ El enlace proporcionado no parece ser válido. Por favor, envía un enlace válido de YouTube.`;
     }
 
-    // Llamar a la API para obtener el audio del video
-    const res = await fetch(`https://api.vreden.web.id/api/ytmp3?url=${videoUrl}`);
-    if (!res.ok) throw '❌ Error al obtener datos de música. Por favor intenta más tarde.';
-    const json = await res.json();
+    const encodedUrl = encodeURIComponent(videoUrl);
+    const primaryAPI = `https://mahiru-shiina.vercel.app/download/ytmp3?url=${encodedUrl}`;
+    const backupAPI = `https://api.vreden.my.id/api/ytmp3?url=${encodedUrl}`;
+
+    let json = null;
+
+    // Intentar la API primaria
+    try {
+      const res = await fetch(primaryAPI);
+      if (!res.ok) throw new Error('Error en la API primaria.');
+      json = await res.json();
+    } catch (err) {
+      console.warn('API primaria falló, intentando la API de respaldo...');
+      const resBackup = await fetch(backupAPI);
+      if (!resBackup.ok) throw new Error('Error en la API de respaldo.');
+      json = await resBackup.json();
+    }
 
     const { title, audio_url } = json.result || {};
     if (!audio_url || !title) throw '❌ No se pudo obtener el audio de la API.';
