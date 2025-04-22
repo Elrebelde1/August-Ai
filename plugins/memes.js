@@ -1,36 +1,30 @@
 
-let handler = async (m) => {
-    const memes = [
-        'https://i.imgur.com/1.jpg', // Reemplaza con enlaces a tus memes
-        'https://qu.ax/dpYLN.jpg',
-        'https://qu.ax/YvLWt.jpg',
-        'https://qu.ax/FxBzq.jpg',
-        'https://qu.ax/oRkAi.jpg',
-        'https://qu.ax/Gfnrz.jpg',
-        'https://qu.ax/UFWsB.jpg',
-        'https://qu.ax/rubYe.jpg',
-        'https://qu.ax/UFWsB.jpg',
-        'https://qu.ax/uyjpK.jpg',
-        'https://qu.ax/RcxFR.jpg',
-        'https://qu.ax/MctMj.jpg',
-        'https://qu.ax/znbWC.jpg',
-        'https://qu.ax/lLJMP.jpg',
-        'https://qu.ax/HhOVP.jpg',
-        'https://qu.ax/yQoQW.jpg',
-        'https://qu.ax/msDFZ.jpg',
-        'https://qu.ax/MTDhM.jpg',
-        'https://qu.ax/hFQOL.jpg'
-    ];
+import fetch from 'node-fetch';
 
-    // Elegir un meme aleatorio
-    const randomMeme = memes[Math.floor(Math.random() * memes.length)];
+const handler = async (m, { conn, args, usedPrefix, command }) => {
+    if (!args[0]) {
+        return m.reply(`❌ Debes proporcionar un enlace de imagen para generar el meme.\n\nEjemplo: *${usedPrefix + command} https://example.com/image.jpg*`);
+    }
 
-    // Enviar el meme al chat
-    await conn.sendMessage(m.chat, { image: { url: randomMeme }, caption: "¡Aquí tienes un meme para alegrar tu día!" }, { quoted: m });
-}
+    try {
+        const imageUrl = encodeURIComponent(args[0]);
+        const apiUrl = `https://api.siputzx.my.id/api/m/memgen?link=${imageUrl}`;
 
-handler.help = ['meme'];
-handler.tags = ['diversión'];
-handler.command = ['meme'];
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('❌ Error en la API.');
 
+        const result = await response.json();
+        if (!result.url) throw new Error('❌ No se pudo generar el meme.');
+
+        await conn.sendMessage(m.chat, { image: { url: result.url }, caption: '🤣 Aquí está tu meme generado.' }, { quoted: m });
+
+        await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
+
+    } catch (error) {
+        console.error(error);
+        m.reply(`❌ Ocurrió un error al generar el meme.`);
+    }
+};
+
+handler.command = /^memes$/i;
 export default handler;
