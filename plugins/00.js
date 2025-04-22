@@ -20,5 +20,5 @@ await conn.sendMessage(m.chat, aud, { quoted: m })
 console.error(error)
 }}
 
-handler.command = ['soundcloud', 'soundcloudplay']
+handler.command = ['soun', 'soundcloudplay']
 export default handler
