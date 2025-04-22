@@ -1,37 +1,25 @@
 
-import fetch from 'node-fetch';
+import fetch from 'node-fetch'
 
-const handler = async (m, { conn, args, usedPrefix, command }) => {
-    try {
-        if (!args[0]) {
-            return m.reply(`❌ Debes proporcionar el nombre de una canción de SoundCloud.\n\nEjemplo: *${usedPrefix + command} nombre_de_la_canción*`);
-        }
+let handler = async (m, { conn, text }) => {
+if (!text) return conn.reply(m.chat, `Ingresa el texto o artista de tu música favorita para descargarla ⭐🔥`, m)
 
-        const searchQuery = encodeURIComponent(args.join(" "));
-        const apiUrl = `https://api.siputzx.my.id/api/s/soundcloud?query=${searchQuery}`;
-        
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('❌ Error en la API.');
+try {
+let apiSearch = await fetch(`https://api.siputzx.my.id/api/s/soundcloud?query=${text}`)   
+let jsonSearch = await apiSearch.json()
+let { permalink_url:link } = jsonSearch.data[0]
 
-        const result = await response.json();
-        if (!result.audio) throw new Error('❌ No se encontró el audio.');
+let apiDL = await fetch(`https://api.siputzx.my.id/api/d/soundcloud?url=${link}`)
+let jsonDL = await apiDL.json()
+let { title, thumbnail, url } = jsonDL.data
 
-        await conn.sendMessage(m.chat, { react: { text: '🎵', key: m.key } });
+let aud = { audio: { url: url }, mimetype: 'audio/mp4', fileName: `${title}.mp3`, contextInfo: { externalAdReply: { showAdAttribution: true, mediaType: 2, mediaUrl: url, title: title, sourceUrl: null, thumbnail: await (await conn.getFile(thumbnail)).data }}}
 
-        await conn.sendMessage(m.chat, {
-            audio: { url: result.audio },
-            mimetype: 'audio/mpeg',
-            fileName: `${result.title || 'Canción'}.mp3`,
-            caption: `🎶 *Título:* ${result.title || 'Desconocido'}\n🎤 *Artista:* ${result.artist || 'Desconocido'}`
-        }, { quoted: m });
+await conn.sendMessage(m.chat, aud, { quoted: m })
 
-        await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key } });
+} catch (error) {
+console.error(error)
+}}
 
-    } catch (err) {
-        console.error(err);
-        m.reply(`❌ Ocurrió un error al procesar la solicitud.`);
-    }
-};
-
-handler.command = /^soundcloud$/i;
-export default handler;
+handler.command = ['soundlcloud', 'soundcloudplay']
+export default handler
