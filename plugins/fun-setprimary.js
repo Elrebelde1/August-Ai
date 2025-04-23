@@ -1,71 +1,43 @@
+// By GataDios
+import ws from 'ws';
 
-import fs from "fs";
-import path from "path";
+let handler = async (m, { conn, usedPrefix, args }) => {
+if (!args[0] && !m.quoted) return m.reply(`⚠️ Menciona el número de un bot o responde al mensaje de un bot.\n> Ejemplo: *${usedPrefix}setprimary @0*`);
 
-const handler = async (m, { conn, text, usedPrefix, command, isAdmin, isOwner }) => {
-  try {
-    // Validación: Solo administradores y propietarios pueden usar este comando
-    if (!isAdmin && !isOwner) {
-      return m.reply("❌ Solo los administradores o el propietario del bot pueden usar este comando.");
-    }
+const users = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])];
 
-    // Validación: Verificar si se proporciona texto para el mensaje principal
-    if (!text) {
-      return m.reply(
-        `❌ Debes proporcionar un mensaje para configurarlo como mensaje principal.\n\nEjemplo: ${usedPrefix + command} Bienvenidos al grupo, respeten las reglas.`
-      );
-    }
+let botJid;
+let selectedBot;
 
-    // Ruta para almacenar mensajes principales
-    const filePath = path.resolve("./groupPrimaryMessages.json");
+if (m.mentionedJid && m.mentionedJid.length > 0) {
+botJid = m.mentionedJid[0];
+} else if (m.quoted) {
+botJid = m.quoted.sender;
+} else {
+botJid = args[0].replace(/[^0-9]/g, '') + '@s.whatsapp.net';
+} if (botJid === conn.user.jid || botJid === global.conn.user.jid) {
+selectedBot = conn;
+} else {
+selectedBot = users.find(conn => conn.user.jid === botJid);
+}
 
-    // Verificar si el archivo existe y cargar mensajes principales
-    let primaryMessages = {};
-    if (fs.existsSync(filePath)) {
-      try {
-        primaryMessages = JSON.parse(fs.readFileSync(filePath, "utf8"));
-      } catch (e) {
-        console.error("⚠️ Error leyendo el archivo JSON:", e.message);
-      }
-    }
+if (!selectedBot) {
+return conn.reply(m.chat, `⚠️ @${botJid.split`@`[0]} no es un bot de la misma sessión, verifica los bots conectados, usando *#bots*.`, m, { mentions: [botJid] });
+}
 
-    // Guardar o actualizar el mensaje principal del grupo
-    primaryMessages[m.chat] = text;
-    fs.writeFileSync(filePath, JSON.stringify(primaryMessages, null, 2));
+let chat = global.db.data.chats[m.chat];
+if (chat.primaryBot === botJid) {
+return conn.reply(m.chat, `⚠️ @${botJid.split`@`[0]} ya es el bot primario.`, m, { mentions: [botJid] });
+}
 
-    m.reply(`✅ *Mensaje Principal* configurado exitosamente:\n\n"${text}"`);
-  } catch (error) {
-    console.error("❌ Error al configurar el mensaje principal:", error.message);
-    m.reply("❌ Hubo un error al configurar el mensaje principal. Por favor, inténtalo nuevamente.");
-  }
+chat.primaryBot = botJid;
+conn.sendMessage(m.chat, { text: `✅ El bot @${botJid.split('@')[0]} ha sido establecido como primario en este grupo. Los demás bots no responderán aquí.`, mentions: [botJid]}, { quoted: m });
 };
 
-// Comando para ver el mensaje principal del grupo
-const handlerViewPrimary = async (m, { conn }) => {
-  try {
-    const filePath = path.resolve("./groupPrimaryMessages.json");
+handler.help = ['setprimary <@tag>'];
+handler.tags = ['jadibot'];
+handler.command = ['setprimary'];
+handler.group = true;
+handler.admin = true;
 
-    // Verificar si existe el archivo y si el grupo tiene un mensaje configurado
-    if (!fs.existsSync(filePath)) {
-      return m.reply("❗ No hay mensajes principales configurados todavía.");
-    }
-
-    const primaryMessages = JSON.parse(fs.readFileSync(filePath, "utf8"));
-    const primaryMessage = primaryMessages[m.chat];
-
-    if (!primaryMessage) {
-      return m.reply("❗ Este grupo no tiene un mensaje principal configurado.");
-    }
-
-    m.reply(`📌 *Mensaje Principal del Grupo:* \n\n"${primaryMessage}"`);
-  } catch (error) {
-    console.error("❌ Error al mostrar el mensaje principal:", error.message);
-    m.reply("❌ Hubo un error al mostrar el mensaje principal. Por favor, inténtalo nuevamente.");
-  }
-};
-
-// Registro de comandos
-handler.command = ["setprimary"];
-handlerViewPrimary.command = ["viewprimary"];
-
-export default [handler, handlerViewPrimary];
+export default handler;
