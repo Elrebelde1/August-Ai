@@ -13,7 +13,7 @@ global.rcanal = {
  contextInfo: {
              isForwarded: true,
     forwardedNewsletterMessageInfo: {
-      newsletterJid: "120363375378707428@newsletter",
+      newsletterJid: "120363377595441592@newsletter",
       serverMessageId: 100,
       newsletterName: name,
    }, 
@@ -62,7 +62,7 @@ global.icono = [
     contextInfo: {
             isForwarded: true,
     forwardedNewsletterMessageInfo: {
-      newsletterJid: "120363375378707428@newsletter",
+      newsletterJid: "120363377595441592@newsletter",
       serverMessageId: 100,
       newsletterName: name,
     },
