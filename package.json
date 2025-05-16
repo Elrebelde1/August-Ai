@@ -1,5 +1,5 @@
 {
-  "name": "Barboza",
+  "name": "Bolillo",
   "version": "2.2.0",
   "description": "Super WhatsApp Bot Multi Device",
   "main": "index.js",
@@ -14,24 +14,24 @@
     "qr": "node index.js qr",
     "code": "node index.js code",
     "test": "node test.js",
-    "test2": "nodemon index.js", 
+    "test2": "nodemon index.js",
     "eslint": "eslint .",
     "eslintfix": "eslint --fix ."
   },
-  "homepage": "https://github.com/Elrebelde1/BarbozaBot-Ai.git",
+  "homepage": "https://github.com/meldexzz/bolibotmensual.git",
   "author": {
-    "name": "Barboza"
+    "name": "meldexzz"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Elrebelde1/BarbozaBot-Ai.git"
+    "url": "https://github.com/meldexzz/bolibotmensual.git"
   },
   "bugs": {
-    "url": "https://github.com/Elrebelde1/BarbozaBot-Ai.git"
+    "url": "https://github.com/meldexzz/bolibotmensual.git"
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@whiskeysockets/baileys": "github:ds6/bails",
+      "@whiskeysockets/baileys": "npm:@fizzxydev/baileys-pro",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@bochilteam/scraper": "^4.2.4",
     "@bochilteam/scraper-sosmed": "^1.0.5",
@@ -51,6 +51,7 @@
     "fluid-spotify.js": "*",
     "cheerio": "npm:cheerio@1.0.0-rc.12",
     "express": "^4.18.1",
+    "senna-fg": "latest",
     "file-type": "^18.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "formdata-node": "^5.0.0",
@@ -94,7 +95,8 @@
     "megajs": "^1.1.3",
     "mime-types": "^2.1.35",
     "api-dylux": "^1.7.2",
-    "yargs": "^17.3.1"
+    "yargs": "^17.3.1",
+    "p-limit": "^6.2.0" 
   },
   "optionalDependencies": {
     "wa-sticker-formatter": "^4.3.2",
